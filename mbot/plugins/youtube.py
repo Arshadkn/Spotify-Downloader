@@ -60,7 +60,6 @@ async def _(_,message):
                 ]
             ),
             reply_to_message_id=message.message_id
-     )
      await m.delete()
     except Exception as e:
         LOGGER.error(e)
