@@ -49,7 +49,7 @@ async def _(_,message):
             fileLink = await ytdl_down(audio_opt(randomdir,id[2]),id[0])
             thumnail = await thumb_down(id[0])
             AForCopy = await message.reply_audio(fileLink,caption=f"[{id[3]}](https://youtu.be/{id[0]}) - {id[2]}",title=id[3].replace("_"," "),performer=id[2],thumb=thumnail,duration=id[4])
-            
+        await m.delete()
     except Exception as e:
         LOGGER.error(e)
         await m.edit_text(e)
