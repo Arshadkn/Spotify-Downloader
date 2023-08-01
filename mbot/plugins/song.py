@@ -85,7 +85,7 @@ async def song_fetch(client, message):
                     ]
                 ]
             ),
-            reply_to_message_id=message.message_id
+            
         )
         await m.delete()
     except Exception as e:
