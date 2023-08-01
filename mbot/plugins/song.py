@@ -1,116 +1,155 @@
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram.errors import ChatWriteForbidden
-import yt_dlp
-from youtube_search import YoutubeSearch
-import requests
-import wget
-import hashlib 
+
+from __future__ import unicode_literals
+
+
+
+import asyncio
+
+import math
+
 import os
 
-@Client.on_message(filters.command(['song']) & filters.group)
-async def song_fetch(client, message):
-    query = ''
-    for i in message.command[1:]:
-        query += ' ' + str(i)
-    print(query)
-    ydl_opts = {"format": "bestaudio[ext=m4a]"}
+import time
+
+from random import randint
+
+from urllib.parse import urlparse
+
+import aiofiles
+
+import aiohttp
+
+import requests
+
+import wget
+
+import yt_dlp
+
+from pyrogram import Client, filters
+
+from pyrogram.errors import FloodWait, MessageNotModified
+
+from pyrogram.types import Message
+
+from youtube_search import YoutubeSearch
+
+from yt_dlp import YoutubeDL
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+ydl_opts = {
+
+    'format': 'best',
+
+    'keepvideo': True,
+
+    'prefer_ffmpeg': False,
+
+    'geo_bypass': True,
+
+    'outtmpl': '%(title)s.%(ext)s',
+
+    'quite': True
+
+}
+
+ytregex = r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$"
+
+@Client.on_message(filters.command(["song", "mp3"]))
+
+def song(_, message):
+
+    query = " ".join(message.command[1:])
+
+    ydl_ops = {"format": "bestaudio[ext=m4a]"}
+
     try:
-        results = []
-        count = 0
-        while len(results) == 0 and count < 6:
-            if count > 0:
-                time.sleep(1)
-            results = YoutubeSearch(query, max_results=1).to_dict()
-            count += 1
-        # results = YoutubeSearch(query, max_results=1).to_dict()
-        try:
-            link = f"https://youtube.com{results[0]['url_suffix']}"
-            # print(results)
-            title = results[0]["title"]
-            thumbnail = results[0]["thumbnails"][0]
-            duration = results[0]["duration"]
-            views = results[0]["views"]
 
-            ## UNCOMMENT THIS IF YOU WANT A LIMIT ON DURATION. CHANGE 1800 TO YOUR OWN PREFFERED DURATION AND EDIT THE MESSAGE (30 minutes cap) LIMIT IN SECONDS
-            # if time_to_seconds(duration) >= 7000:  # duration limit
-            #     m.edit("Exceeded 30mins cap")
-            #     return
+        results = YoutubeSearch(query, max_results=1).to_dict()
 
-            performer = f"[@AnnabenbotZ]"
-            thumb_name = f'thumb{message.message_id}.jpg'
-            thumb = requests.get(thumbnail, allow_redirects=True)
-            open(thumb_name, 'wb').write(thumb.content)
-            hash_object = hashlib.sha256()
-            hash_object.update(title.encode('utf-8'))
-            hash_value = hash_object.hexdigest()
-            keyw = hash_value[:5]
+        link = f"https://youtube.com{results[0]['url_suffix']}"
 
-        except Exception as e:
-            print(e)
-            await message.reply_text('**👎 Nothing found Retry with another !**')
-            return
+        title = results[0]["title"][:40]
+
+        duration = results[0]["duration"]
+
+        channel = results[0]["channel"]
+
+        thumbnail = results[0]["thumbnails"][0]
+
+        thumb_name = f"{title}.jpg"
+
+        thumb = requests.get(thumbnail, allow_redirects=True)
+
+        open(thumb_name, "wb").write(thumb.content)
+
+        duration = results[0]["duration"]
+
     except Exception as e:
-        await message.reply_text(
-            "**Enter Song Name with /song Command!**"
-        )
+
+        message.reply_text(f"👋Hey  {message.from_user.first_name}  its very easy to request music here\n\nRequest - Examples:\n➲ /song Srivalli Malayalam\n➲ /song Darshana hridayam\n➲ /song Alone - Marshmallow\n➲ /song Aathmavile anandhame\n➲ /song Parayathe vannnen\n\nHope You Understood 🙂\n🍒")
+
         print(str(e))
+
         return
-    m = await message.reply_text("<code>✨ Fetching... </code>")
-    
+
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+
+        with yt_dlp.YoutubeDL(ydl_ops) as ydl:
+
             info_dict = ydl.extract_info(link, download=False)
+
             audio_file = ydl.prepare_filename(info_dict)
+
             ydl.process_info(info_dict)
-            AUDIO[keyw] = {
-                "audio_file": audio_file,
-                "title": title,
-                "duration": duration,
-                "link": link,
-                "thumb_name": thumb_name
-            }
-        rep = f'<a>{title}</a>\n\n❍ <b>Duration:</b> <code>{duration}</code>\n❍ <b>Uploaded By:</b> <a href="https://t.me/Edit_Repo">BenbotZ</a>\n<b>❍ Source:</b> <a href="{link}">Click Here</a>'
-        secmul, dur, dur_arr = 1, 0, duration.split(':')
+
+        rep = f"⍟ <code> {title} </code>\n⍟Dᴜʀᴀᴛɪᴏɴ:{duration}\n⍟ Sᴏɴɢ Lɪɴᴋ:<a href={link}>Cʟɪᴄᴋ Hᴇʀᴇ </a>\n⍟ Uᴘʟᴏᴀᴅᴇᴅ Bʏ:<a href=https://t.me/kerala_music_group_2>Kᴇʀᴀʟᴀ Mᴜsɪᴄ</a>"
+        
+        
+                        
+                    
+
+        secmul, dur, dur_arr = 1, 0, duration.split(":")
+
         for i in range(len(dur_arr) - 1, -1, -1):
-            dur += (int(dur_arr[i]) * secmul)
+
+            dur += int(float(dur_arr[i])) * secmul
+
             secmul *= 60
-        await message.reply_audio(
-            audio_file, caption=rep, parse_mode='HTML', quote=False, title=title, duration=dur, performer=performer,
+
+
+
+    
+
+        m=message.reply_text("<code> ✨ Fetching... </code>")
+
+        message.reply_audio(
+
+            audio_file,
+
+            caption=rep,
+
             thumb=thumb_name,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'sendpm#{keyw}')
-                    ]
-                ]
-            ),
-            
+
+            title=title,
+
+            duration=dur,
+
         )
-        await m.delete()
+
+        m.delete()
+
     except Exception as e:
-        await message.reply_text('**An internal Error Occured, Report This @Edit_repo !!**')
+
+        message.reply_text("#ERROR, ᴛʜᴇʀᴇ ɪs sᴏᴍᴇ ᴇʀʀᴏʀ. ᴘʟs ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ...")
+
         print(e)
 
-@Client.on_callback_query(filters.regex(r"^sendpm"))
-async def callback_handler(client, query):
-    data = query.data
-    sng = data.split("#")[1]
-    audio_file = AUDIO[sng]["audio_file"]  
-    duration = AUDIO[sng]["duration"]
-    title = AUDIO[sng]["title"]    
-    link = AUDIO[sng]["link"]
-    performer = f"[@AnnabenbotZ]"
-    thumb_name = AUDIO[sng]["thumb_name"]
-    rep = f'<a>{title}</a>\n\n❍ <b>Duration:</b> <code>{duration}</code>\n❍ <b>Uploaded By:</b> <a href="https://t.me/Edit_Repo">BenbotZ</a>\n<b>❍ Source:</b> <a href="{link}">Click Here</a>'  
     try:
-        secmul, dur, dur_arr = 1, 0, duration.split(':')
-        for i in range(len(dur_arr) - 1, -1, -1):
-            dur += (int(dur_arr[i]) * secmul)
-            secmul *= 60
-        user_id = query.from_user.id        
-        await client.send_audio(user_id, audio_file, caption=rep, parse_mode='HTML', title=title, duration=dur, performer=performer, thumb=thumb_name, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ɢʀᴏᴜᴘ ✨🌟", url="https://t.me/+BzleUoO-duFmODRl")]]))
-        await query.answer("Audio Send Successfully", show_alert=True)
-    except ChatWriteForbidden:
-        print("Cannot send a message to this user.")     
-        await query.answer("Start The Bot!", show_alert=True)
+
+        os.remove(audio_file)
+
+        os.remove(thumb_name)
+
+    except Exception as e:
+
+        print(e)
