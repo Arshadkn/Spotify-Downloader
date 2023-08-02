@@ -21,9 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 elif query.data == "arshad":
-        await query.answer(text=script.ARSHAD, show_alert=True)
-
-
+        await query.answer(text="This Feature Will Be Added Soon. keep Supporting Us", show_alert=True)
+        
 from os import mkdir
 from random import randint
 from mbot import AUTH_CHATS, LOG_GROUP, LOGGER, Mbot
