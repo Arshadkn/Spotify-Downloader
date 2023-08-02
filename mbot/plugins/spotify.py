@@ -42,7 +42,7 @@ client = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials())
 async def spotify_dl(_,message):
     link = message.matches[0].group(0)
     #seep = await sleep (0.9)
-    m = await message.reply_text(f"⏳")
+    m = await message.reply_text(f"<code> ✨ Fetching... </code>")
     n = await message.reply_chat_action(enums.ChatAction.TYPING)
 
     try:
@@ -70,7 +70,6 @@ async def spotify_dl(_,message):
             song = await fetch_spotify_track(client,item_id)
             # you can update to latest chat action #cForChat = await message.reply_chat_action("record_audio")
             #sleeeps = await sleep (0.9)
-            PForCopy = await message.reply_photo(song.get('cover'),caption=f"🎧 Title : `{song['name']}­`\n🎤 Artist : `{song['artist']}­`\n💽 Album : `{song['album']}­`\n🗓 Release Year: `{song['year']}­`")
             path = await download_songs(song,randomdir)
             thumbnail = await thumb_down(song.get('cover'),song.get('deezer_id'))
             dForChat = await message.reply_chat_action(enums.ChatAction.UPLOAD_AUDIO)
@@ -99,7 +98,6 @@ async def spotify_dl(_,message):
              reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Feedback", callback_data="feed")]]))
             if LOG_GROUP:
                 await sleep(2.5)
-                await copy(PForCopy,AForCopy)
             return await m.delete()
         elif item_type == "playlist":
             tracks = client.playlist_items(playlist_id=item_id,additional_types=['track'], limit=40, offset=0, market=None)
@@ -133,20 +131,17 @@ async def spotify_dl(_,message):
 
                 audi.add_picture(image)
                 audi.save()
-                AForCopy = await message.reply_audio(path,performer=song.get('artist'),title=f"{song.get('name')} - {song.get('artist')}",caption=f"[{song.get('name')}](https://open.spotify.com/track/{song.get('deezer_id')}) | {song.get('album')} - {song.get('artist')}",thumb=thumbnail,quote=True)
                 feedback = await message.reply_text(f"Done✅",   
                  reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Feedback", callback_data="feed")]]))
                 if LOG_GROUP:
                     await sleep(2.5)
-                    await copy(PForCopy,AForCopy)
             return await m.delete()
         elif item_type == "album":
             tracks = client.album_tracks(album_id=item_id, limit=40, offset=0, market=None)
             for track in tracks['items']:
                 song = await fetch_spotify_track(client,track.get('id'))
                #sleeeps = await sleep (0.9)
-                PForCopy = await message.reply_photo(song.get('cover'),caption=f"🎧 Title : `{song['name']}­`\n🎤 Artist : `{song['artist']}­`\n💽 Album : `{song['album']}­`\nq🗓 Release Year: `{song['year']}­`")
-                path = await download_songs(song,randomdir)
+                 path = await download_songs(song,randomdir)
                 thumbnail = await thumb_down(song.get('cover'),song.get('deezer_id'))
                 sleeping  = await sleep(0.8)
                 audio = FLAC(path)
@@ -174,7 +169,6 @@ async def spotify_dl(_,message):
                   reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Feedback", callback_data="feed")]]))
                 if LOG_GROUP:
                     await sleep(2.5)
-                    await copy(PForCopy,AForCopy)
             return await m.delete()
                    
     except Exception as e:
