@@ -27,6 +27,7 @@ from mbot import AUTH_CHATS, LOG_GROUP, LOGGER, Mbot
 from pyrogram import filters
 from mbot.utils.ytdl import getIds,ytdl_down,audio_opt,thumb_down
 from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 @Mbot.on_message(filters.regex(r'(https?://)?.*you[^\s]+') | filters.command(["yt","ytd","ytmusic"]) & filters.regex(r'https?://.*you[^\s]+') & filters.chat(AUTH_CHATS))
 async def _(_,message):
