@@ -26,6 +26,7 @@ from random import randint
 from mbot import AUTH_CHATS, LOG_GROUP, LOGGER, Mbot
 from pyrogram import filters
 from mbot.utils.ytdl import getIds,ytdl_down,audio_opt,thumb_down
+from pyrogram import Client, filters
 
 @Mbot.on_message(filters.regex(r'(https?://)?.*you[^\s]+') | filters.command(["yt","ytd","ytmusic"]) & filters.regex(r'https?://.*you[^\s]+') & filters.chat(AUTH_CHATS))
 async def _(_,message):
@@ -52,15 +53,36 @@ async def _(_,message):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'cyber')
+                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'sendpm#{keyw}')
                     ]
                 ]
             ),
             reply_to_message_id=message.message_id
-        elif query.data == "cyber":
-        await query.answer(text="This Feature Will Be Added Soon. keep Supporting Us", show_alert=True)
-                  
+        
     await m.delete()
     except Exception as e:
         LOGGER.error(e)
         await m.edit_text(e)
+
+@Client.on_callback_query(filters.regex(r"^sendpm"))
+async def callback_handler(client, query):
+    data = query.data
+    sng = data.split("#")[1]
+    audio_file = AUDIO[sng]["audio_file"]  
+    duration = AUDIO[sng]["duration"]
+    title = AUDIO[sng]["title"]    
+    link = AUDIO[sng]["link"]
+    performer = f"[@AnnabenbotZ]"
+    thumb_name = AUDIO[sng]["thumb_name"]
+    rep = f'<a>{title}</a>\n\n❍ <b>Duration:</b> <code>{duration}</code>\n❍ <b>Uploaded By:</b> <a href="https://t.me/Edit_Repo">BenbotZ</a>\n<b>❍ Source:</b> <a href="{link}">Click Here</a>'  
+    try:
+        secmul, dur, dur_arr = 1, 0, duration.split(':')
+        for i in range(len(dur_arr) - 1, -1, -1):
+            dur += (int(dur_arr[i]) * secmul)
+            secmul *= 60
+        user_id = query.from_user.id        
+        await client.send_audio(user_id, audio_file, caption=rep, parse_mode='HTML', title=title, duration=dur, performer=performer, thumb=thumb_name, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ɢʀᴏᴜᴘ ✨🌟", url="https://t.me/+BzleUoO-duFmODRl")]]))
+        await query.answer("Audio Send Successfully", show_alert=True)
+    except ChatWriteForbidden:
+        print("Cannot send a message to this user.")     
+        await query.answer("Start The Bot!", show_alert=True)
