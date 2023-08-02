@@ -39,13 +39,7 @@ async def _(_,message):
         "https://youtu.be/",
         "https://youtu.be",
     ]:
-            AUDIO[keyw] = {
-                "audio_file": audio_file,
-                "title": title,
-                "duration": duration,
-                "link": link,
-                "thumb_name": thumb_name
-           }   
+
         return await m.edit_text("Please send a valid playlist or video link.")
     elif "channel" in link or "/c/" in link:
         return await m.edit_text("**Channel** Download Not Available. ")
@@ -61,7 +55,7 @@ async def _(_,message):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'sendpm#{keyw}')
+                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'sendpm')
                     ]
                 ]
             ),
