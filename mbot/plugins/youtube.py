@@ -39,6 +39,18 @@ async def _(_,message):
         "https://youtu.be/",
         "https://youtu.be",
     ]:
+            try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(link, download=False)
+            audio_file = ydl.prepare_filename(info_dict)
+            ydl.process_info(info_dict)
+            AUDIO[keyw] = {
+                "audio_file": audio_file,
+                "title": title,
+                "duration": duration,
+                "link": link,
+                "thumb_name": thumb_name
+           }   
         return await m.edit_text("Please send a valid playlist or video link.")
     elif "channel" in link or "/c/" in link:
         return await m.edit_text("**Channel** Download Not Available. ")
@@ -90,10 +102,4 @@ async def callback_handler(client, query):
         await query.answer("Start The Bot!", show_alert=True)
 
     
-            AUDIO[keyw] = {
-                "audio_file": audio_file,
-                "title": title,
-                "duration": duration,
-                "link": link,
-                "thumb_name": thumb_name
-            }
+            
