@@ -20,9 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-elif query.data == "arshad":
-        await query.answer(text="This Feature Will Be Added Soon. keep Supporting Us", show_alert=True)
-        
+
 from os import mkdir
 from random import randint
 from mbot import AUTH_CHATS, LOG_GROUP, LOGGER, Mbot
@@ -59,6 +57,10 @@ async def _(_,message):
                 ]
             ),
             reply_to_message_id=message.message_id
+               
+   elif query.data == "arshad":
+        await query.answer(text="This Feature Will Be Added Soon. keep Supporting Us", show_alert=True)
+                  
      await m.delete()
     except Exception as e:
         LOGGER.error(e)
