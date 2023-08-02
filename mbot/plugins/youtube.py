@@ -52,16 +52,15 @@ async def _(_,message):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'arshad')
+                        InlineKeyboardButton("✨ Send - Personally ✨", callback_data=f'cyber')
                     ]
                 ]
             ),
             reply_to_message_id=message.message_id
-               
-   elif query.data == "arshad":
+        elif query.data == "cyber":
         await query.answer(text="This Feature Will Be Added Soon. keep Supporting Us", show_alert=True)
                   
-     await m.delete()
+    await m.delete()
     except Exception as e:
         LOGGER.error(e)
         await m.edit_text(e)
